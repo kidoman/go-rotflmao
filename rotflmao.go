@@ -1,16 +1,15 @@
 package main
 
 import (
-    "fmt"
-    "github.com/jsgoecke/attspeech"
-    "github.com/vova616/go-openal/openal"
-    "math"
-    "os"
-    "time"
-    "io/ioutil"
-    "encoding/binary"
- )
-
+  "encoding/binary"
+  "fmt"
+  "github.com/jsgoecke/attspeech"
+  "github.com/vova616/go-openal/openal"
+  "io/ioutil"
+  "math"
+  "os"
+  "time"
+)
 
 type Format struct {
   FormatTag     int16
@@ -79,7 +78,6 @@ func ReadWavFile(path string) (*Format, []byte, error) {
     format = f3.Format
   }
 
- 
   f.Read(buff[:4])
 
   if string(buff[:4]) != "data" {
@@ -108,15 +106,14 @@ func TimeToData(t time.Duration, samples int, channels int) int {
   return int((float64(samples)/(1/t.Seconds()))+0.5) * channels
 }
 
-
-
 func main() {
   expression := "ROTFLMAO!"
   holdyahorses := "WAIT FOR IT..."
-	fmt.Println(expression)
+  fmt.Println(expression)
 
   fmt.Println(holdyahorses)
-  //TTS 
+  
+  //TTS
   client := attspeech.New("fcs3ffhfpavzvc1iimvmtgxinnbb5agt", "cwdvrcfz7xm8dxw4bkstfenphwb8funw", "")
   client.SetAuthTokens()
   apiRequest := client.NewAPIRequest(attspeech.TTSResource)
@@ -125,21 +122,19 @@ func main() {
   apiRequest.Text = expression
   data, err := client.TextToSpeech(apiRequest)
   if err != nil {
-      fmt.Println(err)
-      os.Exit(1)
+    fmt.Println(err)
+    os.Exit(1)
   }
   err = ioutil.WriteFile("./buffer.wav", data, 0444)
   if err != nil {
-      fmt.Println(err)
-      os.Exit(1)
+    fmt.Println(err)
+    os.Exit(1)
   }
 
   //OPEN-AL
-
   device := openal.OpenDevice("")
   context := device.CreateContext()
   context.Activate()
- 
 
   source := openal.NewSource()
   source.SetPitch(1)
@@ -156,19 +151,19 @@ func main() {
 
   switch format.Channels {
   case 1:
-    buffer.SetData(openal.FormatMono16, data[:len(data)], int32(format.Samples))
+    buffer.SetData(openal.FormatMono16, data[:], int32(format.Samples))
   case 2:
-    buffer.SetData(openal.FormatStereo16, data[:len(data)], int32(format.Samples))
-  } 
+    buffer.SetData(openal.FormatStereo16, data[:], int32(format.Samples))
+  }
   source.SetBuffer(buffer)
- 
+
   source.Play()
   for source.State() == openal.Playing {
 
     //loop long enough to let the wave file finish
 
   }
- 
+
   source.Pause()
   source.Stop()
   return
