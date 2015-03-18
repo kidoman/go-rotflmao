@@ -109,8 +109,8 @@ func TimeToData(t time.Duration, samples int, channels int) int {
 func main() {
 	expression := "ROTFLMAO!"
 	holdyahorses := "WAIT FOR IT..."
+	
 	fmt.Println(expression)
-
 	fmt.Println(holdyahorses)
 
 	//TTS
@@ -155,19 +155,17 @@ func main() {
 	case 2:
 		buffer.SetData(openal.FormatStereo16, data[:], int32(format.Samples))
 	}
+
 	source.SetBuffer(buffer)
-
 	source.Play()
+	
 	for source.State() == openal.Playing {
-
 		//loop long enough to let the wave file finish
-
 	}
-
+	
 	source.Pause()
 	source.Stop()
 	return
 	context.Destroy()
 	time.Sleep(time.Second)
-
 }
